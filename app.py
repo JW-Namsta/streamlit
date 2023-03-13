@@ -1,5 +1,9 @@
 import streamlit as st
 
+######################
+###  페이지  레이아웃  ###
+######################
+
 st.set_page_config(
     page_title="인생체중 테스트 페이지",
     page_icon="🧊",
@@ -11,6 +15,8 @@ st.set_page_config(
         'About': "# This is a header. This is an *extremely* cool app!"
     }
 )
+
+input_text,result_text = st.columns(2)
 
 ######################
 ### SIDE BAR 영역   ###
@@ -31,7 +37,7 @@ else :
 
 st.sidebar.header('키, 체중, 허리둘레')
 height = st.sidebar.number_input('키 입력(cm)', min_value=100.0, max_value=200.0, value=170.0, step=0.1)
-weight = st.sidebar.number_input('체중 입력(kg)', min_value=30.0, max_value=200.0, value=60.0, step=0.1)
+weight = st.sidebar.number_input('체중 입력(kg)', min_value=30.0, max_value=200.0, value=70.0, step=0.1)
 wc = st.sidebar.number_input('허리둘레 입력(inch)', min_value=10.0, max_value=100.0, value=32.0, step=0.1)*2.54
 
 st.sidebar.header('자존감')
@@ -45,25 +51,27 @@ disease = st.sidebar.checkbox('기저질환 여부')
 health_check = st.sidebar.checkbox('검진결과 상 문제가 있나요?')
 forecasting = st.sidebar.number_input('질병예보 결과입력', min_value=0.0, max_value=5.0, value=1.0, step=0.1)
 
-
 ######################
 ### input값 확인 영역 ###
 ######################
-st.write('나는 건강이 "{}" 미용이 "{}"만큼 중요하다.'.format(health_weight, 100-health_weight))
-st.write('연령 : {}대로 선택하셨습니다.'.format(age_group))
-st.write('성별 : {} 선택하셨습니다.'.format(sex))
+with input_text :
+    st.header('[입력값 확인]')
 
-st.write('키 : {:.2f}cm'.format(height))
-st.write('체중 : {:.2f}kg'.format(weight))
-st.write('허리둘레 : {:.2f}cm'.format(wc))
+    st.write('나는 건강이 "{}" 미용이 "{}"만큼 중요하다.'.format(health_weight, 100-health_weight))
+    st.write('연령 : {}대로 선택하셨습니다.'.format(age_group))
+    st.write('성별 : {} 선택하셨습니다.'.format(sex))
 
-st.write('자존감상태 : {}'.format(esteem_val))
+    st.write('키 : {:.2f}cm'.format(height))
+    st.write('체중 : {:.2f}kg'.format(weight))
+    st.write('허리둘레 : {:.2f}cm'.format(wc))
 
-st.write('컨디션상태 : {}'.format(condition_val))
+    st.write('자존감상태 : {}'.format(esteem_val))
 
-st.write('기저질환 유무 : {}'.format(disease))
-st.write('건강검진 결과 : {}'.format(health_check))
-st.write('질병예보 결과 : {:.2f}배'.format(forecasting))
+    st.write('컨디션상태 : {}'.format(condition_val))
+
+    st.write('기저질환 유무 : {}'.format(disease))
+    st.write('건강검진 결과 : {}'.format(health_check))
+    st.write('질병예보 결과 : {:.2f}배'.format(forecasting))
 
 ######################
 ###    함수 선언부    ###
@@ -176,8 +184,8 @@ def condition(condition_val, weight, weight_b, weight_h) :
 ######################
 ###    연산 실행부    ###
 ######################
-st.write('---')
-st.header('결과부')
+with result_text :
+    st.header('[결과값 확인]')
 # 변수명
 # health_weight : 건강 가치관
 # age_group : 연령대
@@ -192,25 +200,25 @@ st.header('결과부')
 # forcasting : 질병예보
 
 # 적정체중 : BMI = 21인 체중
-proper_weight = 21 * (height/100)**2
+    proper_weight = 21 * (height/100)**2
 
 # 유형 구분
-user_bmi = cal_bmi(height, weight)
-user_whtr = cal_whtr(height, wc)
-user_group = group_user(user_bmi, user_whtr)
-user_group_group = group_user_group(user_group)
+    user_bmi = cal_bmi(height, weight)
+    user_whtr = cal_whtr(height, wc)
+    user_group = group_user(user_bmi, user_whtr)
+    user_group_group = group_user_group(user_group)
 
-questionnaire_mapper = {'매우양호':3,'양호':2,'나쁨':1,'매우나쁨':0}
-# 미용체중 계산
-weight_b = cal_beauty_weight(user_group_group, weight, height, wc, sex)
-weight_b = esteem(questionnaire_mapper[esteem_val], weight, weight_b)
+    questionnaire_mapper = {'매우양호':3,'양호':2,'나쁨':1,'매우나쁨':0}
+    # 미용체중 계산
+    weight_b = cal_beauty_weight(user_group_group, weight, height, wc, sex)
+    weight_b = esteem(questionnaire_mapper[esteem_val], weight, weight_b)
 
-# 건강체중 계산
-weight_h = cal_health_weight(user_group_group, weight, height, wc, sex, age_group)
-weight_h = condition(questionnaire_mapper[condition_val], weight, weight_b, weight_h)
-weight_h = medical(weight_h, disease, health_check, forecasting)
+    # 건강체중 계산
+    weight_h = cal_health_weight(user_group_group, weight, height, wc, sex, age_group)
+    weight_h = condition(questionnaire_mapper[condition_val], weight, weight_b, weight_h)
+    weight_h = medical(weight_h, disease, health_check, forecasting)
 
-st.write('미용체중 : {:.1f}'.format(weight_b))
-st.write('건강체중 : {:.1f}'.format(weight_h))
-ideal_weight = (weight_b*(100-health_weight) + weight_h*health_weight)/100
-st.write('인생체중 : {:.1f}'.format(ideal_weight))
+    st.write('미용체중 : {:.1f}'.format(weight_b))
+    st.write('건강체중 : {:.1f}'.format(weight_h))
+    ideal_weight = (weight_b*(100-health_weight) + weight_h*health_weight)/100
+    st.write('인생체중 : {:.1f}'.format(ideal_weight))
