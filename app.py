@@ -160,37 +160,38 @@ elif sex == '여' :
 if exam_common(age, health_insurance) is True : 
     st.header(f'당신은 {standard_year}년에 국가검진 대상입니다.')
     st.subheader('아래에서 무슨 검사를 받는지 확인해 보세요!')
-
-    left_side,right_side = st.columns(2)
-    exam_basic = ['공통항목','우울증','콜레스테롤','B형간염','골밀도','인지기능장애','생활습관평가','노인신체기능검사','치면세균막검사']
-    exam_cancer = ['위암','간암','대장암','유방암','자궁경부암','폐암']
-    with left_side :
-        st.header('일반검진')
-        df = pd.DataFrame(
-            index=exam_basic,
-            data={'검진 항목':[exam_common(age,health_insurance),
-                            exam_depression(age),
-                            exam_cholesterol(age,sex),
-                            exam_HBV(age),
-                            exam_BMD(age),
-                            exam_Alzheimer(age),
-                            exam_habits(age),
-                            exam_oldman(age),
-                            exam_mouth(age)]})
-        st.write(df)
-    with right_side :
-        st.header('암검진')
-        df = pd.DataFrame(
-            index=exam_cancer,
-            data={'검진 항목':[exam_ulcer(age),
-                            False,
-                            exam_colon(age),
-                            exam_mammo(age,sex),
-                            exam_womb(age,sex),
-                            False]})
-        st.write(df)
 elif exam_common(age, health_insurance) is False : 
     st.header(f'당신은 {standard_year}년에 국가검진 대상이 아닙니다.')
-    st.subheader('내년에 국가검진을 받으세요!')
+
+
+
+left_side,right_side = st.columns(2)
+exam_basic = ['공통항목','우울증','콜레스테롤','B형간염','골밀도','인지기능장애','생활습관평가','노인신체기능검사','치면세균막검사']
+exam_cancer = ['위암','간암','대장암','유방암','자궁경부암','폐암']
+with left_side :
+    st.header('일반검진')
+    df = pd.DataFrame(
+        index=exam_basic,
+        data={'검진 항목':[exam_common(age,health_insurance),
+                        exam_depression(age),
+                        exam_cholesterol(age,sex),
+                        exam_HBV(age),
+                        exam_BMD(age),
+                        exam_Alzheimer(age),
+                        exam_habits(age),
+                        exam_oldman(age),
+                        exam_mouth(age)]})
+    st.write(df)
+with right_side :
+    st.header('암검진')
+    df = pd.DataFrame(
+        index=exam_cancer,
+        data={'검진 항목':[exam_ulcer(age),
+                        False,
+                        exam_colon(age),
+                        exam_mammo(age,sex),
+                        exam_womb(age,sex),
+                        False]})
+    st.write(df)
 
 st.error('대충 정확하게 보려면 간편인증을 통해 확인해주겠다는 메시지', icon="🚨")
